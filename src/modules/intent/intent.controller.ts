@@ -1,5 +1,6 @@
-import type { Request, Response } from "express";
-import redis from "../../infra/database/redis";
+import type { Request, Response } from 'express';
+import redis from '../../infra/cache/redis';
+import mongo from '../../infra/database/mongodb';
 
 class IntentController {
   private static instance: IntentController;
@@ -14,19 +15,25 @@ class IntentController {
   }
 
   async createIntent(req: Request, res: Response) {
-    const slug =
-      "intent:" +
-      String(req.body.name)
-        .toLowerCase()
-        .replace(/\s/g, "-")
-        .concat("-")
-        .concat(Math.random().toString(36).substring(7));
+    const prefix = 'intent:';
+    const slug = String(req.body.name)
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .concat('-')
+      .concat(Math.random().toString(36).substring(7));
 
-    await redis.set(slug, req.body.text, "EX", 3600);
+    await redis.set(prefix + slug, req.body.text, 'EX', 3600);
+
+    await mongo(async (client) => {
+      const db = client.db('mydb');
+      const collection = db.collection('intents');
+      return await collection.insertOne({ slug });
+    });
+
     return res.status(201).json({
-      message: "Intent created successfully",
+      message: 'Intent created successfully',
       slug,
-      expires_in: "3600s",
+      expires_in: '3600s',
     });
   }
 }
