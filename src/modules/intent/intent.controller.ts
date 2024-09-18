@@ -25,9 +25,7 @@ class IntentController {
     await redis.set(prefix + slug, req.body.text, 'EX', 3600);
 
     await mongo(async (client) => {
-      const db = client.db('mydb');
-      const collection = db.collection('intents');
-      return await collection.insertOne({ slug });
+      return await client.db('mydb').collection('intents').insertOne({ slug });
     });
 
     return res.status(201).json({
