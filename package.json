@@ -7,19 +7,12 @@
     "dev": "tsnd --respawn src/server.ts",
     "build": "tsc",
     "lint": "biome lint",
-    "format": "biome format"
+    "format": "biome format",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@biomejs/biome": "1.9.1",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.5.5",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.6.2"
-  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.0",
@@ -27,5 +20,21 @@
     "mongodb": "^6.9.0",
     "redis": "^4.7.0",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.5",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "pnpm lint --write",
+      "pnpm format --write"
+    ]
   }
 }
