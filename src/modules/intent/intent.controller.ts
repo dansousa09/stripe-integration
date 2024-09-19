@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express';
-import redis from '../../infra/cache/redis';
-import mongo from '../../infra/database/mongodb';
+import intentService from './intent.service';
 
 class IntentController {
   private static instance: IntentController;
@@ -15,18 +14,7 @@ class IntentController {
   }
 
   async createIntent(req: Request, res: Response) {
-    const prefix = 'intent:';
-    const slug = String(req.body.name)
-      .toLowerCase()
-      .replace(/\s/g, '-')
-      .concat('-')
-      .concat(Math.random().toString(36).substring(7));
-
-    await redis.set(prefix + slug, req.body.text, 'EX', 3600);
-
-    await mongo(async (client) => {
-      return await client.db('mydb').collection('intents').insertOne({ slug });
-    });
+    const slug = await intentService.createIntent(req.body.name, req.body.text);
 
     return res.status(201).json({
       message: 'Intent created successfully',
