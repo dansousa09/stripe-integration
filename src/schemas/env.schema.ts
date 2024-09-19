@@ -18,6 +18,10 @@ const envSchema = z.object({
     })
     .url()
     .default('mongodb://localhost:27017'),
+  STRIPE_SECRET_KEY: z.string({
+    description: 'The secret key of the Stripe API',
+    required_error: 'The secret key of the Stripe API is required',
+  }),
 });
 
 const envParsed = envSchema.safeParse(process.env);
