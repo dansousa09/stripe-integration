@@ -1,4 +1,5 @@
 import redis from '../../infra/cache/redis';
+import checkoutService from '../checkout/checkout.service';
 
 class IntentService {
   private static instance: IntentService;
@@ -22,7 +23,9 @@ class IntentService {
 
     await redis.set(prefix + slug, text, 'EX', 3600);
 
-    return slug;
+    const { url } = await checkoutService.createCheckout();
+
+    return { slug, url };
   }
 }
 

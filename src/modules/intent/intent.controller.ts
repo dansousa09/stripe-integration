@@ -14,13 +14,24 @@ class IntentController {
   }
 
   async createIntent(req: Request, res: Response) {
-    const slug = await intentService.createIntent(req.body.name, req.body.text);
+    try {
+      const { slug, url } = await intentService.createIntent(
+        req.body.name,
+        req.body.text,
+      );
 
-    return res.status(201).json({
-      message: 'Intent created successfully',
-      slug,
-      expires_in: '3600s',
-    });
+      return res.status(201).json({
+        message: 'Intent created successfully',
+        slug,
+        checkout_url: url,
+        expires_in: '3600s',
+      });
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    } catch (error: any) {
+      return res.status(error.statusCode).json({
+        message: error.message,
+      });
+    }
   }
 }
 
